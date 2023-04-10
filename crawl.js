@@ -1,27 +1,49 @@
 const url = require('url');
-
+const { JSDOM } = require('jsdom');
 
 function normalizeUrl(urlString) {
-    let parsedUrl = url.parse(urlString);
+  let parsedUrl = url.parse(urlString);
 
-    if (!parsedUrl.protocol) {
-        parsedUrl = url.parse(`https://${urlString}`);
-      }
-  
-    parsedUrl.pathname = parsedUrl.pathname.replace(/\/+$/, '');
-  
-    parsedUrl.protocol = parsedUrl.protocol.toLowerCase();
-    parsedUrl.hostname = parsedUrl.hostname.toLowerCase();
-    parsedUrl.pathname = parsedUrl.pathname.toLowerCase();
-  
-    return url.format(parsedUrl);
-  };
+  if (!parsedUrl.protocol) {
+    parsedUrl = url.parse(`https://${urlString}`);
+  }
 
-function getUrlsFromHtml(){
-    return []
+  parsedUrl.pathname = parsedUrl.pathname.replace(/\/+$/, '');
+
+  parsedUrl.protocol = parsedUrl.protocol.toLowerCase();
+  parsedUrl.hostname = parsedUrl.hostname.toLowerCase();
+  parsedUrl.pathname = parsedUrl.pathname.toLowerCase();
+
+  return url.format(parsedUrl);
 }
-  
+
+function getUrlsFromHtml(htmlBody, baseUrl) {
+  const dom = new JSDOM(htmlBody);
+  const urls = [];
+  const linkElements = dom.window.document.querySelectorAll('a');
+
+  for (const linkElement of linkElements) {
+    if (linkElement.href.slice(0, 1) === '/') {
+      try {
+        const urlObj = new URL(`${baseUrl}${linkElement.href}`);
+        urls.push(urlObj.href);
+      } catch (err) {
+        console.log(err.message);
+      }
+    } else {
+      try {
+        const urlObj = new URL(linkElement.href);
+
+        urls.push(urlObj.href);
+      } catch (err) {
+        console.log(err.message);
+      }
+    }
+  }
+  return urls
+}
+
 module.exports = {
   normalizeUrl,
-  getUrlsFromHtml
+  getUrlsFromHtml,
 };
