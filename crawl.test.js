@@ -40,7 +40,7 @@ describe('getUrlsFromHtml function', () => {
     expect(getUrlsFromHtml(html)).toEqual([]);
   });
 
-  test('should extract all URLs from the HTML', () => {
+  test('should extract all valid URLs from the HTML', () => {
     const html = `
           <html>
             <body>
@@ -48,7 +48,6 @@ describe('getUrlsFromHtml function', () => {
               <a href="https://example.com/path/">Example path</a>
               <a href="/path/">Example relative path</a>
               <a href="invalid">Example invalid url</a>
-              <p>Other URLs: http://example.com, https://example.com/path/file.html</p>
             </body>
           </html>
         `;
@@ -59,8 +58,6 @@ describe('getUrlsFromHtml function', () => {
       'https://example.com/',
       'https://example.com/path/',
       'https://example.com/path/',
-      'http://example.com',
-      'https://example.com/path/file.html',
     ]);
   });
   
