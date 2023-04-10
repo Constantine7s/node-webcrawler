@@ -1,9 +1,35 @@
-const { nortmalizeUrl } = require('./crawl.js');
+const { normalizeUrl } = require('./crawl.js');
 const { test, expect } = require('@jest/globals');
 
-test('normalizeUrl', () => {
-    const input = "https://google.com/";
-    const actual = nortmalizeUrl(input);
-    const expected = "google.com";
-    expect(actual).toEqual(expected);
-})
+
+describe('normalizeUrl function', () => {
+  test('should remove trailing slashes from the URL', () => {
+    const inputUrl = 'https://example.com/path/';
+    const expectedUrl = 'https://example.com/path';
+    expect(normalizeUrl(inputUrl)).toEqual(expectedUrl);
+  });
+
+  test('should convert the URL to lowercase', () => {
+    const inputUrl = 'HTTPS://EXAMPLE.COM/PATH';
+    const expectedUrl = 'https://example.com/path';
+    expect(normalizeUrl(inputUrl)).toEqual(expectedUrl);
+  });
+
+  test('should add "https://" to the URL if no protocol is specified', () => {
+    const inputUrl = 'example.com';
+    const expectedUrl = 'https://example.com';
+    expect(normalizeUrl(inputUrl)).toEqual(expectedUrl);
+  });
+
+  test('should handle URLs with query parameters', () => {
+    const inputUrl = 'https://example.com/path?query=parameter';
+    const expectedUrl = 'https://example.com/path?query=parameter';
+    expect(normalizeUrl(inputUrl)).toEqual(expectedUrl);
+  });
+
+  test('should handle URLs with hash fragments', () => {
+    const inputUrl = 'https://example.com/path#fragment';
+    const expectedUrl = 'https://example.com/path#fragment';
+    expect(normalizeUrl(inputUrl)).toEqual(expectedUrl);
+  });
+});
