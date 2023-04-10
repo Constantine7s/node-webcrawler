@@ -1,4 +1,4 @@
-const { normalizeUrl } = require('./crawl.js');
+const { normalizeUrl, getUrlsFromHtml } = require('./crawl.js');
 const { test, expect } = require('@jest/globals');
 
 
@@ -32,4 +32,11 @@ describe('normalizeUrl function', () => {
     const expectedUrl = 'https://example.com/path#fragment';
     expect(normalizeUrl(inputUrl)).toEqual(expectedUrl);
   });
+});
+
+describe('getUrlsFromHtml function', () => {
+    test('should return an empty array if no URLs are found', () => {
+        const html = '<html><body><h1>Hello, world!</h1></body></html>';
+        expect(getUrlsFromHtml(html)).toEqual([]);
+      });
 });
