@@ -1,8 +1,22 @@
-function nortmalizeUrl(urlString) {
-  const urlObj = new URL(urlString);
-  return `${urlObj.hostname}${urlObj.pathname}`;
-}
+const url = require('url');
 
+
+function normalizeUrl(urlString) {
+    let parsedUrl = url.parse(urlString);
+
+    if (!parsedUrl.protocol) {
+        parsedUrl = url.parse(`https://${urlString}`);
+      }
+  
+    parsedUrl.pathname = parsedUrl.pathname.replace(/\/+$/, '');
+  
+    parsedUrl.protocol = parsedUrl.protocol.toLowerCase();
+    parsedUrl.hostname = parsedUrl.hostname.toLowerCase();
+    parsedUrl.pathname = parsedUrl.pathname.toLowerCase();
+  
+    return url.format(parsedUrl);
+  }
+  
 module.exports = {
-  nortmalizeUrl,
+  normalizeUrl,
 };
