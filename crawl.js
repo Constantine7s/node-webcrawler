@@ -15,8 +15,13 @@ function normalizeUrl(urlString) {
     parsedUrl.pathname = parsedUrl.pathname.toLowerCase();
   
     return url.format(parsedUrl);
-  }
+  };
+
+function getUrlsFromHtml(){
+    return []
+}
   
 module.exports = {
   normalizeUrl,
+  getUrlsFromHtml
 };
