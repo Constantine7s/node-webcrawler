@@ -1,7 +1,6 @@
 const { normalizeUrl, getUrlsFromHtml } = require('./crawl.js');
 const { test, expect } = require('@jest/globals');
 
-
 describe('normalizeUrl function', () => {
   test('should remove trailing slashes from the URL', () => {
     const inputUrl = 'https://example.com/path/';
@@ -35,8 +34,35 @@ describe('normalizeUrl function', () => {
 });
 
 describe('getUrlsFromHtml function', () => {
-    test('should return an empty array if no URLs are found', () => {
-        const html = '<html><body><h1>Hello, world!</h1></body></html>';
-        expect(getUrlsFromHtml(html)).toEqual([]);
-      });
+
+  test('should return an empty array if no URLs are found', () => {
+    const html = '<html><body><h1>Hello, world!</h1></body></html>';
+    expect(getUrlsFromHtml(html)).toEqual([]);
+  });
+
+  test('should extract all URLs from the HTML', () => {
+    const html = `
+          <html>
+            <body>
+              <a href="https://example.com/">Example website</a>
+              <a href="https://example.com/path/">Example path</a>
+              <a href="/path/">Example relative path</a>
+              <a href="invalid">Example invalid url</a>
+              <p>Other URLs: http://example.com, https://example.com/path/file.html</p>
+            </body>
+          </html>
+        `;
+
+    const baseUrl = 'https://example.com';
+
+    expect(getUrlsFromHtml(html, baseUrl)).toEqual([
+      'https://example.com/',
+      'https://example.com/path/',
+      'https://example.com/path/',
+      'http://example.com',
+      'https://example.com/path/file.html',
+    ]);
+  });
+  
+
 });
