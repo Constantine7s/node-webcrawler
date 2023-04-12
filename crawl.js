@@ -1,7 +1,21 @@
 const url = require('url');
 const { JSDOM } = require('jsdom');
 
-async function crawlPage(pageUrl) {
+async function crawlPage(baseUrl, pageUrl, pages) {
+  const pageUrlObj = new URL(pageUrl);
+  const baseUrlObj = new URL(baseUrl);
+  if (pageUrlObj.hostname !== baseUrlObj.hostname) {
+    return pages;
+  }
+
+  const normalizedPageUrl = normalizeUrl(pageUrl);
+  if (pages[normalizedPageUrl] > 0) {
+    pages[normalizedPageUrl]++;
+    return pages;
+  }
+
+  pages[normalizedPageUrl] = 1;
+
   console.log(`I'm crawling over ${pageUrl}`);
 
   try {
@@ -11,21 +25,27 @@ async function crawlPage(pageUrl) {
       console.log(
         `Error when trying to fetch ${pageUrl} with status ${resp.status}`
       );
-      return;
+      return pages;
     }
 
     const contentType = resp.headers.get('content-type');
     if (!contentType.includes('text/html')) {
-      console.log(
-        `Wrong content-type: ${contentType}`
-      );
-      return;
+      console.log(`Wrong content-type: ${contentType}`);
+      return pages;
     }
 
-    console.log(await resp.text());
+    const htmlBody = await resp.text();
+
+    const nextUrls = getUrlsFromHtml(htmlBody, baseUrl);
+
+    for (const url of nextUrls) {
+      pages = await crawlPage(baseUrl, url, pages);
+    }
   } catch (err) {
     console.log(`Error when trying to fetch ${pageUrl}: ${err.message}`);
   }
+
+  return pages;
 }
 
 function normalizeUrl(urlString) {
