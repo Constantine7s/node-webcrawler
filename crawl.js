@@ -1,6 +1,33 @@
 const url = require('url');
 const { JSDOM } = require('jsdom');
 
+async function crawlPage(pageUrl) {
+  console.log(`I'm crawling over ${pageUrl}`);
+
+  try {
+    const resp = await fetch(pageUrl);
+
+    if (resp.status >= 400) {
+      console.log(
+        `Error when trying to fetch ${pageUrl} with status ${resp.status}`
+      );
+      return;
+    }
+
+    const contentType = resp.headers.get('content-type');
+    if (!contentType.includes('text/html')) {
+      console.log(
+        `Wrong content-type: ${contentType}`
+      );
+      return;
+    }
+
+    console.log(await resp.text());
+  } catch (err) {
+    console.log(`Error when trying to fetch ${pageUrl}: ${err.message}`);
+  }
+}
+
 function normalizeUrl(urlString) {
   let parsedUrl = url.parse(urlString);
 
@@ -40,10 +67,11 @@ function getUrlsFromHtml(htmlBody, baseUrl) {
       }
     }
   }
-  return urls
+  return urls;
 }
 
 module.exports = {
   normalizeUrl,
   getUrlsFromHtml,
+  crawlPage,
 };
