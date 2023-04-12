@@ -3,7 +3,7 @@ const { test, expect } = require('@jest/globals');
 
 
 describe('sortPages', () => {
-    it('should correctly sort links by occurrences and alphabetically', () => {
+    test('should correctly sort links by occurrences and alphabetically', () => {
         const input = {
             "https://example.com": 5,
             "https://test.com": 3,
@@ -19,13 +19,13 @@ describe('sortPages', () => {
         expect(sortPages(input)).toEqual(expectedOutput);
     });
 
-    it('should handle empty input object', () => {
+    test('should handle empty input object', () => {
         const input = {};
         const expectedOutput = [];
         expect(sortPages(input)).toEqual(expectedOutput);
     });
 
-    it('should handle input object with single key-value pair', () => {
+    test('should handle input object with single key-value pair', () => {
         const input = {
             "https://single.com": 1
         };
